@@ -1,0 +1,46 @@
+[
+    {
+      "name": "HighValueTxn",
+      "conditions": {
+        "and": [
+          { ">": [{ "var": "amount" }, 1000] },
+          { "==": [{ "var": "currency" }, "INR" ] }
+        ]
+      },
+      "actions": [
+        {
+          "type": "webhook",
+          "url": "https://webhook.site/your-highvalue-url",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "name": "SignupAgeCheck",
+      "conditions": {
+        ">=": [{ "var": "age" }, 18]
+      },
+      "actions": [
+        {
+          "type": "webhook",
+          "url": "https://webhook.site/your-agecheck-url",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledAlert",
+      "conditions": {
+        "==": [1, 1]
+      },
+      "actions": [
+        {
+          "type": "webhook",
+          "url": "https://webhook.site/your-scheduled-url",
+          "method": "POST"
+        }
+      ],
+      "schedule": "*/1 * * * *"
+    }
+  ]
+  

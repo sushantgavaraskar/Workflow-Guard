@@ -30,12 +30,13 @@ const RuleForm = () => {
       await axios.post('/api/rules', payload);
       setMessage('✅ Rule created successfully!');
     } catch (err) {
-  if (err.response && err.response.data && err.response.data.error) {
-    setMessage(`❌ ${err.response.data.error}`);
-  } else {
-    setMessage('❌ Error creating rule');
+      if (err.response && err.response.data && err.response.data.error) {
+       setMessage(`${err.response.data.error}`);
+      } else {
+      setMessage('Error creating rule');
+    }
   }
-}
+ } 
 
   
 

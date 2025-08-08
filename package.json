@@ -1,28 +1,60 @@
 {
   "name": "workflow-guard",
   "version": "1.0.0",
-  "description": "",
+  "description": "A conditional automation engine for defining and executing JSON-based workflow rules with webhook actions",
   "main": "server/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "build": "echo 'No build step required for Node.js backend'",
+    "test": "jest",
+    "lint": "eslint server/",
+    "lint:fix": "eslint server/ --fix",
+    "db:init": "node server/models/db.js",
+    "db:seed": "node scripts/seed.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sushantgavaraskar/Workflow-Guard.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "workflow",
+    "automation",
+    "rules-engine",
+    "webhooks",
+    "json-logic",
+    "nodejs",
+    "express",
+    "api"
+  ],
+  "author": "Sushant Gavaraskar",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/sushantgavaraskar/Workflow-Guard/issues"
   },
   "homepage": "https://github.com/sushantgavaraskar/Workflow-Guard#readme",
   "dependencies": {
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.6",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "joi": "^17.11.0",
     "json-logic-js": "^2.0.5",
     "node-cron": "^4.1.0",
     "sqlite3": "^5.1.6",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }

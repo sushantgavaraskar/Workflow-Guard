@@ -1,0 +1,804 @@
+{
+	"info": {
+		"_postman_id": "workflow-guard-api",
+		"name": "Workflow Guard API",
+		"description": "Complete API collection for Workflow Guard - Enterprise Automation API\n\nThis collection includes all endpoints with sample data, proper headers, and scripts for testing the automation engine.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health & Status",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check the health status of the Workflow Guard API"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Scheduler Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/scheduler/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"scheduler",
+								"status"
+							]
+						},
+						"description": "Get the current status of the cron scheduler"
+					},
+					"response": []
+				}
+			],
+			"description": "Health and status monitoring endpoints"
+		},
+		{
+			"name": "Rules Management",
+			"item": [
+				{
+					"name": "Get All Rules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/rules?isActive=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules"
+							],
+							"query": [
+								{
+									"key": "isActive",
+									"value": "true",
+									"description": "Filter by active rules"
+								}
+							]
+						},
+						"description": "Retrieve all rules with optional filtering"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rule - High Value Transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Store the created rule ID for subsequent requests",
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('ruleId', response.data.id);",
+									"    console.log('Created rule with ID:', response.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"High Value Transaction Alert\",\n  \"conditions\": {\n    \"and\": [\n      { \">\": [{ \"var\": \"amount\" }, 1000] },\n      { \"==\": [{ \"var\": \"currency\" }, \"USD\"] }\n    ]\n  },\n  \"actions\": [\n    {\n      \"type\": \"webhook\",\n      \"url\": \"https://webhook.site/{{webhookToken}}\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\",\n        \"X-Workflow-Guard\": \"high-value-alert\"\n      },\n      \"retries\": 3,\n      \"timeout\": 5000\n    }\n  ],\n  \"schedule\": null,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/rules",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules"
+							]
+						},
+						"description": "Create a rule for high-value transactions"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rule - User Age Verification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Store the created rule ID for subsequent requests",
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('ageRuleId', response.data.id);",
+									"    console.log('Created age verification rule with ID:', response.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"User Age Verification\",\n  \"conditions\": {\n    \">=\": [{ \"var\": \"age\" }, 18]\n  },\n  \"actions\": [\n    {\n      \"type\": \"webhook\",\n      \"url\": \"https://webhook.site/{{webhookToken}}\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\",\n        \"X-Workflow-Guard\": \"age-verification\"\n      }\n    }\n  ],\n  \"schedule\": null,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/rules",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules"
+							]
+						},
+						"description": "Create a rule for age verification"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rule - Scheduled Daily Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Store the created rule ID for subsequent requests",
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('scheduledRuleId', response.data.id);",
+									"    console.log('Created scheduled rule with ID:', response.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Scheduled Daily Report\",\n  \"conditions\": {\n    \"==\": [1, 1]\n  },\n  \"actions\": [\n    {\n      \"type\": \"webhook\",\n      \"url\": \"https://webhook.site/{{webhookToken}}\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\",\n        \"X-Workflow-Guard\": \"daily-report\"\n      }\n    }\n  ],\n  \"schedule\": \"0 0 9 * * *\",\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/rules",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules"
+							]
+						},
+						"description": "Create a scheduled rule that runs daily at 9 AM"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rule by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/{{ruleId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"{{ruleId}}"
+							]
+						},
+						"description": "Retrieve a specific rule by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rule",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated High Value Transaction Alert\",\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/{{ruleId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"{{ruleId}}"
+							]
+						},
+						"description": "Update an existing rule"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rule",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/{{ruleId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"{{ruleId}}"
+							]
+						},
+						"description": "Delete a rule by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Import Rules",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"name\": \"Failed Login Alert\",\n    \"conditions\": {\n      \"and\": [\n        { \"==\": [{ \"var\": \"event\" }, \"login.failed\"] },\n        { \">\": [{ \"var\": \"attempts\" }, 3] }\n      ]\n    },\n    \"actions\": [\n      {\n        \"type\": \"webhook\",\n        \"url\": \"https://webhook.site/{{webhookToken}}\",\n        \"method\": \"POST\",\n        \"headers\": {\n          \"X-Security-Level\": \"high\"\n        }\n      }\n    ],\n    \"schedule\": null\n  },\n  {\n    \"name\": \"Inventory Low Stock\",\n    \"conditions\": {\n      \"<\": [{ \"var\": \"stock\" }, 10]\n    },\n    \"actions\": [\n      {\n        \"type\": \"webhook\",\n        \"url\": \"https://webhook.site/{{webhookToken}}\",\n        \"method\": \"POST\",\n        \"retries\": 3,\n        \"timeout\": 5000\n      }\n    ],\n    \"schedule\": null\n  }\n]"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/bulk",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"bulk"
+							]
+						},
+						"description": "Import multiple rules at once"
+					},
+					"response": []
+				}
+			],
+			"description": "CRUD operations for workflow rules"
+		},
+		{
+			"name": "Rule Execution",
+			"item": [
+				{
+					"name": "Trigger Rules - High Value Transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Log the execution results",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    console.log('Triggered rules:', response.data.totalRules);",
+									"    console.log('Matched rules:', response.data.matchedRules.length);",
+									"    ",
+									"    // Store execution results for reference",
+									"    pm.environment.set('lastExecution', JSON.stringify(response.data));",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"event\": \"transaction.created\",\n  \"data\": {\n    \"amount\": 1500,\n    \"currency\": \"USD\",\n    \"userId\": \"12345\",\n    \"timestamp\": \"{{$timestamp}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/trigger",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"trigger"
+							]
+						},
+						"description": "Trigger rule evaluation with high-value transaction data"
+					},
+					"response": []
+				},
+				{
+					"name": "Trigger Rules - Age Verification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"event\": \"user.registration\",\n  \"data\": {\n    \"age\": 25,\n    \"email\": \"user@example.com\",\n    \"name\": \"John Doe\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/trigger",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"trigger"
+							]
+						},
+						"description": "Trigger rule evaluation with age verification data"
+					},
+					"response": []
+				},
+				{
+					"name": "Trigger Rules - Failed Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"event\": \"login.failed\",\n  \"data\": {\n    \"event\": \"login.failed\",\n    \"attempts\": 5,\n    \"userId\": \"user123\",\n    \"ip\": \"192.168.1.100\",\n    \"timestamp\": \"{{$timestamp}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/trigger",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"trigger"
+							]
+						},
+						"description": "Trigger rule evaluation with failed login data"
+					},
+					"response": []
+				},
+				{
+					"name": "Trigger Rules - Low Stock",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"event\": \"inventory.updated\",\n  \"data\": {\n    \"stock\": 5,\n    \"productId\": \"PROD-001\",\n    \"productName\": \"Laptop\",\n    \"category\": \"Electronics\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/trigger",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"trigger"
+							]
+						},
+						"description": "Trigger rule evaluation with low stock data"
+					},
+					"response": []
+				}
+			],
+			"description": "Rule execution and triggering endpoints"
+		},
+		{
+			"name": "Testing & Validation",
+			"item": [
+				{
+					"name": "Test Condition Syntax",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"condition\": {\n    \"and\": [\n      { \">\": [{ \"var\": \"amount\" }, 1000] },\n      { \"==\": [{ \"var\": \"currency\" }, \"USD\"] }\n    ]\n  },\n  \"testData\": {\n    \"amount\": 1500,\n    \"currency\": \"USD\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/test-condition",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"test-condition"
+							]
+						},
+						"description": "Test JSON Logic condition syntax and evaluation"
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Action Configuration",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": {\n    \"type\": \"webhook\",\n    \"url\": \"https://api.example.com/notify\",\n    \"method\": \"POST\",\n    \"headers\": {\n      \"Authorization\": \"Bearer token\"\n    },\n    \"retries\": 3,\n    \"timeout\": 5000\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/validate-action",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"validate-action"
+							]
+						},
+						"description": "Validate webhook action configuration"
+					},
+					"response": []
+				},
+				{
+					"name": "Test Cron Expression",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"expression\": \"0 */5 * * * *\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/test-cron",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"test-cron"
+							]
+						},
+						"description": "Test cron expression validity and get next execution times"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rule Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"stats"
+							]
+						},
+						"description": "Get statistics about all rules"
+					},
+					"response": []
+				}
+			],
+			"description": "Testing and validation endpoints"
+		},
+		{
+			"name": "Logs & Monitoring",
+			"item": [
+				{
+					"name": "Get Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/logs?page=1&limit=10&sortBy=executedAt&sortOrder=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"logs"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items per page"
+								},
+								{
+									"key": "sortBy",
+									"value": "executedAt",
+									"description": "Sort field"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"description": "Sort direction"
+								}
+							]
+						},
+						"description": "Get workflow execution logs with pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Log Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/logs/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"logs",
+								"stats"
+							]
+						},
+						"description": "Get log statistics and analytics"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rule Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/rules/{{ruleId}}/logs?limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"rules",
+								"{{ruleId}}",
+								"logs"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Number of logs to retrieve"
+								}
+							]
+						},
+						"description": "Get logs for a specific rule"
+					},
+					"response": []
+				},
+				{
+					"name": "Export Logs - JSON",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/logs/export?format=json",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"logs",
+								"export"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json",
+									"description": "Export format"
+								}
+							]
+						},
+						"description": "Export logs in JSON format"
+					},
+					"response": []
+				},
+				{
+					"name": "Export Logs - CSV",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/logs/export?format=csv",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"logs",
+								"export"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "csv",
+									"description": "Export format"
+								}
+							]
+						},
+						"description": "Export logs in CSV format"
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Old Logs",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"days\": 30\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/logs",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"logs"
+							]
+						},
+						"description": "Clear logs older than specified days"
+					},
+					"response": []
+				}
+			],
+			"description": "Logging and monitoring endpoints"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Pre-request script for the entire collection",
+					"console.log('Executing request:', pm.request.name);",
+					"",
+					"// Set timestamp for dynamic data",
+					"pm.environment.set('timestamp', new Date().toISOString());",
+					"",
+					"// Generate webhook token if not exists",
+					"if (!pm.environment.get('webhookToken')) {",
+					"    pm.environment.set('webhookToken', 'demo-' + Math.random().toString(36).substr(2, 9));",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script for the entire collection",
+					"console.log('Response status:', pm.response.status);",
+					"console.log('Response time:', pm.response.responseTime + 'ms');",
+					"",
+					"// Basic response validation",
+					"pm.test('Status code is valid', function () {",
+					"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404, 500]);",
+					"});",
+					"",
+					"// Check if response has expected structure",
+					"if (pm.response.code === 200 || pm.response.code === 201) {",
+					"    pm.test('Response has success field', function () {",
+					"        const response = pm.response.json();",
+					"        pm.expect(response).to.have.property('success');",
+					"    });",
+					"}",
+					"",
+					"// Log response for debugging",
+					"if (pm.response.code !== 200 && pm.response.code !== 201) {",
+					"    console.log('Error response:', pm.response.text());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "webhookToken",
+			"value": "demo-token",
+			"type": "string"
+		}
+	]
+} 
